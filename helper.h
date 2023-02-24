@@ -12,7 +12,7 @@
 */
 void execute_metacommand(const std::string&);
 
-bool execute_statement(Statement&, Table&);
+void execute_statement(Statement&, Table&);
 bool execute_insert(Statement&, Table&);
 bool execute_select(Statement&, Table&);
 

@@ -12,17 +12,17 @@ public:
 
 private:
   StatementType type;
-  Row row;  //se presente, è la riga da inserire in tabella
+  Row row;  //è la riga dove si inserisce/preleva il record dal database
 
 public:
   Statement(const std::string& input);
 
-  StatementType set_type(const StatementType& t) { return type = t; };
+  // StatementType set_type(const StatementType& t) { return type = t; }; //TODO da eliminare perché il tipo viene determinato solo nel costruttore
   StatementType get_type() const { return type; };
   Row& get_row() { return row; };
 };
 
-//FIXME non mi stampa il messaggio di errore
+
 class ParseException : public std::exception {  
 public:
   enum class PrepareError { STRING_TOO_LONG, SYNTAX_ERROR, UNRECOGNIZED_STATEMENT, NEGATIVE_ID };

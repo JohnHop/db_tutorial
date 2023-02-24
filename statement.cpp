@@ -1,6 +1,7 @@
 #include "statement.h"
 
-#include <regex>
+#include <sstream>
+#include <algorithm>
 
 /**
  * Questo costruttore è praticamente un parser: recepisce l'input, verifica la correttezza e quindi costruisce uno Statement.
@@ -13,12 +14,13 @@ Statement::Statement(const std::string& input) {
   input_stream >> token;  //prelevo INSERT | SELECT
   std::transform(token.begin(), token.end(), token.begin(), [](unsigned char c){ return std::tolower(c);}); //converto in minuscolo
 
-  if(token == "insert") { //devo prelevare id, username ed email e salvarli in una Row
+  //Classificazione della query
+  if(token == "insert") { //per ora devo prelevare id, username ed email e salvarli in una Row
     this->type = Statement::StatementType::INSERT;
 
     ((input_stream >> this->row.id) >> this->row.username) >> this->row.email;  //prelevo tutti i dati formattati
 
-    //lancio se l'utente non inserisce tutti i dati || non ne inserisce abbastanza || ne inserisce troppi
+    //lancio se l'utente: non inserisce come primo dato un intero || non inserisce abbastanza dati || ne inserisce troppi
     if(input_stream.fail() || input_stream.bad() || !input_stream.eof()) {
       throw ParseException{ParseException::PrepareError::SYNTAX_ERROR};
     }
