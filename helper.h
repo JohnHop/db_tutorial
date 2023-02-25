@@ -10,11 +10,11 @@
 /**
  * @returns true se il meta-comando è valido, altrimenti false.
 */
-void execute_metacommand(const std::string&);
+bool execute_metacommand(const std::string&);
 
-void execute_statement(Statement&, Table&);
-bool execute_insert(Statement&, Table&);
-bool execute_select(Statement&, Table&);
+void execute_statement(Statement&, Table&); //TODO gestione degli errori nell'esecuzione dello statement
+void execute_insert(Statement&, Table&);
+void execute_select(Statement&, Table&);
 
 class MetacommandException : public std::exception {
 public:

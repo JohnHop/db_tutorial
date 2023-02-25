@@ -3,9 +3,9 @@
 #include <iostream>
 
 
-void execute_metacommand(const std::string& input) {
+bool execute_metacommand(const std::string& input) {
   if(input == ".exit") {
-    std::exit(EXIT_SUCCESS);
+    return true;
   }
   
   throw MetacommandException{MetacommandException::MetacommandError::META_COMMAND_UNRECOGNIZED_COMMAND};
@@ -15,24 +15,21 @@ void execute_statement(Statement& statement, Table& table) {
   switch(statement.get_type()) {
     case(Statement::StatementType::INSERT): {
       execute_insert(statement, table);
+      break;
     }
     case(Statement::StatementType::SELECT): {
       execute_select(statement, table);
+      break;
     }
   }
 }
 
-bool execute_insert(Statement& statement, Table& table) {
-  // TODO esegue la serializzazione in Table
-  table.insert(statement.get_row());
-  return true;
+void execute_insert(Statement& statement, Table& table) {
+  table.insert_row(statement.get_row());
 }
 
-bool execute_select(Statement& statement, Table& table) {
-  //TODO esegue la deserializzazione da Table
-
+void execute_select(Statement& statement, Table& table) {
   for(int i = 0; i < table.get_length(); ++i) {
-    std::cout << table.get_page(i);
+    std::cout << table.read_row(i);
   }
-  return true;
 }

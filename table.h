@@ -3,18 +3,28 @@
 
 #include "statement.h"
 #include "row.h"
+#include "pager.h"
 
-#define TABLE_MAX_PAGES 100
+#define TABLE_SIZE 32
 
+/**
+ * Permette di visualizzare la memoria persistente come una semplice tabella numerata per righe.
+ * Pertanto, supporta banalmente le funzioni di inserimento / lettura di una riga
+*/
 class Table {
+  Row rows[TABLE_SIZE]{};
   int length{0};
-  Row pages[TABLE_MAX_PAGES]{};
+
+  std::string filename;
 
 public:
-  int get_length() const { return length; };
+  Table(const char*);
+  ~Table();  //? Va implementato in qualche modo?
 
-  void insert(const Row& r) { pages[length++] = r; };
-  Row get_page(const int i) const { return pages[i]; }; //estrae dalla memoria
+  void insert_row(const Row& r);
+  Row& read_row(const int i);
+
+  int get_length() const { return length; };
 };
 
 #endif // TABLE
