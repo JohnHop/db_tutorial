@@ -12,14 +12,14 @@
  * Pertanto, supporta banalmente le funzioni di inserimento / lettura di una riga
 */
 class Table {
-  Row rows[TABLE_SIZE]{};
+  Row* rows[TABLE_SIZE]{nullptr};
   int length{0};
 
   std::string filename;
 
 public:
   Table(const char*);
-  ~Table();  //? Va implementato in qualche modo?
+  ~Table();
 
   void insert_row(const Row& r);
   Row& read_row(const int i);
