@@ -18,15 +18,15 @@ struct Row {
   char email[EMAIL_SIZE];
 
   Row(): id{}, username{0}, email{0} { }; //Costruttore di default
-  Row(const Row& row): id{row.id} {       //Costruttore copia
-    std::memcpy(username, row.username, USERNAME_SIZE);
-    std::memcpy(email, row.email, EMAIL_SIZE);
+  Row(const Row& r): id{r.id} {       //Costruttore copia
+    std::memcpy(username, r.username, USERNAME_SIZE);
+    std::memcpy(email, r.email, EMAIL_SIZE);
   }
 
-  Row& operator=(const Row& row) {  //operatore di assegnamento
-    id = row.id;
-    std::memcpy(username, row.username, USERNAME_SIZE);
-    std::memcpy(email, row.email, EMAIL_SIZE);
+  Row& operator=(const Row& r) {  //operatore di assegnamento
+    id = r.id;
+    std::memcpy(username, r.username, USERNAME_SIZE);
+    std::memcpy(email, r.email, EMAIL_SIZE);
     return *this;
   }
 };

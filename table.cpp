@@ -1,55 +1,48 @@
 #include "table.h"
 
 Table::Table(const char* fn)
-: length{0}, filename{fn} 
+: length{0}, pager{fn}
 {
-  std::fstream file{filename, std::ios_base::in | std::ios_base::binary | std::ios_base::ate};
-  
-  if(file) { //Se il file esiste
-    length = file.tellg() / ROW_SIZE; //Ottengo il numero di righe nel file
-
-    // file.seekg(0, std::ios_base::beg);  //Mi posiziono all'inizio del file
-    // for(int i = 0; i < length; ++i) {
-    //   file.read(reinterpret_cast<char*>(&rows[i]), ROW_SIZE); //leggo le righe
-    // }
-  }
-  //* file chiuso automaticamente all'uscita dell'ambito
+  //Devo determinare il numero di righe presenti nella tabella in base al contenuto del file
+  std::pair len = pager.get_length();
+  this->length = ( ( len.first * pager.get_page_size() ) + len.second ) / sizeof(Row);
 }
 
 /**
- * Aggiunta una riga alla tabella nella posizione 'length' (che è la prima posizione libera)
+ * Aggiunge una nuova riga alla tabella e ordina al Pager di aggiungere una riga
 */
 void Table::insert_row(const Row& row) {
-  rows[length++] = new Row{row};
+  pager.write( reinterpret_cast<const void*>(&row), ROW_SIZE ); //fa scrivere al pager
+  rows[length++] = new Row{row};  //Aggiunge la riga alla tabella
 }
 
-Row& Table::read_row(const int index) {
-  //Se non presente, carico la riga dalla memoria persistente
-  if(rows[index] == nullptr) {
-    rows[index] = new Row;
-    std::fstream file{filename, std::ios_base::in | std::ios_base::binary}; //Apro il file //TODO verifica la corretta pertura
-    file.seekg(index*ROW_SIZE, std::ios_base::beg);  //Mi posiziono sulla riga che voglio leggere
-    file.read(reinterpret_cast<char*>(rows[index]), ROW_SIZE); //leggo la riga
-    //* file chiuso automaticamente all'uscita dell'ambito
+/**
+ * Legge una riga alla posizione 'pos' della tabella.
+ * Se non è presente in rows[pos] allora la carica dal pager
+*/
+Row& Table::read_row(const size_t pos) {
+  if(rows[pos] == nullptr) {
+    Row* dest = new Row{};
+
+    size_t byte_pos = pos * ROW_SIZE; //determino a partire da 'pos' la posizione, in termini di byte, della riga da leggere
+
+    pager.read(
+      dest,
+      ROW_SIZE,
+      byte_pos / pager.get_page_size(),
+      byte_pos % pager.get_page_size()
+    );
+    rows[pos] = dest; //salvo il puntatore
   }
-  return *rows[index];
+  return *rows[pos];
 }
 
+/**
+ * Dealloca tutte le righe della tabella solo se sono state allocate
+*/
 Table::~Table() {
-  //Scrittura delle nuove righe nel file
-  std::fstream file{filename, std::ios_base::out | std::ios_base::in | std::ios_base::binary | std::ios_base::ate}; //apro e mi posiziono alla fine del file
-  int file_row_length = file.tellp() / ROW_SIZE;  //ottengo il numero di righe di cui è costituito il file
-
-  if(file_row_length < length) {  //se la tabella ha più righe del file
-    for(int i = file_row_length; i < length; ++i) { //salvo solo le righe che sono "nuove" rispetto al file
-      file.write(reinterpret_cast<char*>(&rows[i]), ROW_SIZE); //scrive la riga
-    }
-  }
-  file.close();
-
-  //Deallocazione della memoria
-  for(int i = 0; i < length; ++i) {
-    if(rows[i] == nullptr) {
+  for(size_t i = 0; i < length; ++i) {
+    if(rows[i] != nullptr) {
       delete rows[i];
       rows[i] = nullptr;
     }

@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
   //   exit(EXIT_FAILURE);
   // }
 
-  Table table{"mydb.db"};  //astrazione della memoria persistente //? lo metto momentaneamente qui e dopo risolvo ma questione dell'ambito
+  Table table{"mydb.db"};  //astrazione della memoria persistente //? lo metto momentaneamente qui e dopo risolvo la questione dell'ambito
   std::string input;
   bool exit_flag{false}; //Ci serve un flag per indicare quando si vuole uscire dal programma o meno
 
