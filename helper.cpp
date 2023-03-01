@@ -25,11 +25,11 @@ void execute_statement(Statement& statement, Table& table) {
 }
 
 void execute_insert(Statement& statement, Table& table) {
-  table.insert_row(statement.get_row());
+  table.insert(statement.get_row());
 }
 
 void execute_select(Statement& statement, Table& table) {
-  for(int i = 0; i < table.get_length(); ++i) {
-    std::cout << table.read_row(i);
+  for(auto cur = table.begin(); cur != table.end(); ++cur) {
+    std::cout << *cur;
   }
 }

@@ -11,7 +11,7 @@ Table::Table(const char* fn)
 /**
  * Aggiunge una nuova riga alla tabella e ordina al Pager di aggiungere una riga
 */
-void Table::insert_row(const Row& row) {
+void Table::insert(const Row& row) {
   pager.write( reinterpret_cast<const void*>(&row), ROW_SIZE ); //fa scrivere al pager
   rows[length++] = new Row{row};  //Aggiunge la riga alla tabella
 }
@@ -20,7 +20,7 @@ void Table::insert_row(const Row& row) {
  * Legge una riga alla posizione 'pos' della tabella.
  * Se non è presente in rows[pos] allora la carica dal pager
 */
-Row& Table::read_row(const size_t pos) {
+Row& Table::read(const size_t pos) {
   if(rows[pos] == nullptr) {
     Row* dest = new Row{};
 
